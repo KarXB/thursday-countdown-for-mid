@@ -1,116 +1,172 @@
-function getNextThursday() {
-    const now = new Date();
-    const targetDay = 4; // Thursday (0 = Sunday, 4 = Thursday)
-    const targetHour = 11;
-    const targetMinute = 30;
-    
-    let thursday = new Date(now);
-    thursday.setHours(targetHour, targetMinute, 0, 0);
-    
-    // If it's past Thursday 11:30, get next Thursday
-    if (now.getDay() > targetDay || (now.getDay() === targetDay && now > thursday)) {
-        thursday.setDate(thursday.getDate() + (7 - thursday.getDay() + targetDay));
-    } 
-    // If it's before Thursday, get this Thursday
-    else if (now.getDay() < targetDay) {
-        thursday.setDate(thursday.getDate() + (targetDay - thursday.getDay()));
-    }
-    
-    return thursday;
+// Audio context for sound effects
+let audioContext;
+try {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+} catch (e) {
+    console.log('Web Audio API is not supported in this browser');
 }
 
-function getTargetDate() {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(11, 0, 0, 0);
-    return tomorrow;
+// Sound effect function
+function playSound(frequency = 440, type = 'sine', duration = 0.1) {
+    if (!audioContext) return;
+    
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+    
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + duration);
 }
-
-// Study tips
-const studyTips = [
-    "Take regular breaks - 5 minutes every 25 minutes",
-    "Stay hydrated - keep water nearby",
-    "Use active recall instead of passive reading",
-    "Create mind maps for complex topics",
-    "Get enough sleep before the exam",
-    "Review past exam questions",
-    "Study in a quiet environment",
-    "Explain concepts to others"
-];
-
-function updateStudyTip() {
-    const tip = studyTips[Math.floor(Math.random() * studyTips.length)];
-    document.getElementById('study-tip').textContent = tip;
-}
-
-// Initialize study tip
-updateStudyTip();
-document.getElementById('new-tip-btn').addEventListener('click', updateStudyTip);
 
 // Sound control
-let soundEnabled = false;
-
-// Sound toggle event listener
-document.getElementById('sound-toggle').addEventListener('click', function() {
-    soundEnabled = !soundEnabled;
-    this.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+let isSoundEnabled = false;
+const soundToggle = document.getElementById('sound-toggle');
+soundToggle.addEventListener('click', () => {
+    isSoundEnabled = !isSoundEnabled;
+    soundToggle.innerHTML = `<i class="fas fa-volume-${isSoundEnabled ? 'up' : 'mute'}"></i>`;
+    if (isSoundEnabled && audioContext?.state === 'suspended') {
+        audioContext.resume();
+    }
 });
+
+// Countdown Timer
+const targetTime = new Date();
+targetTime.setHours(11, 0, 0, 0);
+if (targetTime < new Date()) {
+    targetTime.setDate(targetTime.getDate() + 1);
+}
 
 function updateCountdown() {
     const now = new Date();
-    const target = getTargetDate();
-    const diff = target - now;
-
-    if (diff <= 0) {
-        document.querySelector('.countdown').innerHTML = '<h2>Time is up!</h2>';
+    const difference = targetTime - now;
+    
+    if (difference < 0) {
+        targetTime.setDate(targetTime.getDate() + 1);
         return;
     }
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    const milliseconds = diff % 1000;
-
-    // Update display
+    
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+    const milliseconds = Math.floor((difference % 1000) / 10);
+    
     document.getElementById('days').textContent = String(days).padStart(2, '0');
     document.getElementById('hours').textContent = String(hours).padStart(2, '0');
     document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
     document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
     document.getElementById('milliseconds').textContent = String(milliseconds).padStart(3, '0');
-
+    
     // Update progress bar
-    const totalTime = getTargetDate() - new Date(now.setHours(0,0,0,0));
-    const elapsedTime = now.getTime() - new Date(now.setHours(0,0,0,0));
-    const progress = (elapsedTime / totalTime) * 100;
+    const totalTime = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    const elapsed = totalTime - difference;
+    const progress = (elapsed / totalTime) * 100;
     document.getElementById('progress-bar').style.width = `${progress}%`;
 }
 
-// Update immediately and then every 50ms for smooth milliseconds display
-updateCountdown();
 setInterval(updateCountdown, 50);
 
+// Study Tips
+const studyTips = [
+    "Break your study sessions into 25-minute focused intervals (Pomodoro Technique)",
+    "Create mind maps to visualize complex concepts",
+    "Teach the material to someone else to reinforce your understanding",
+    "Take regular breaks to maintain focus and productivity",
+    "Use active recall instead of passive reading",
+    "Create flashcards for key concepts",
+    "Study in a quiet, well-lit environment",
+    "Get enough sleep before the exam",
+    "Stay hydrated and maintain a healthy diet",
+    "Review past exam questions and practice problems"
+];
+
+let currentTipIndex = -1;
+
+function showNewTip() {
+    let newIndex;
+    do {
+        newIndex = Math.floor(Math.random() * studyTips.length);
+    } while (newIndex === currentTipIndex);
+    
+    currentTipIndex = newIndex;
+    const tipElement = document.getElementById('study-tip');
+    tipElement.style.opacity = '0';
+    
+    setTimeout(() => {
+        tipElement.textContent = studyTips[currentTipIndex];
+        tipElement.style.opacity = '1';
+        if (isSoundEnabled) {
+            playSound(880, 'sine', 0.1);
+        }
+    }, 300);
+}
+
+document.getElementById('new-tip-btn').addEventListener('click', showNewTip);
+showNewTip(); // Show initial tip
+
+// Star Catching Game
+const gameContainer = document.getElementById('game-container');
+const star = document.getElementById('star');
+const scoreElement = document.getElementById('score');
+let score = 0;
+
+function repositionStar() {
+    const containerRect = gameContainer.getBoundingClientRect();
+    const starRect = star.getBoundingClientRect();
+    
+    const maxX = containerRect.width - starRect.width;
+    const maxY = containerRect.height - starRect.height;
+    
+    const randomX = Math.random() * maxX;
+    const randomY = Math.random() * maxY;
+    
+    star.style.left = `${randomX}px`;
+    star.style.top = `${randomY}px`;
+}
+
+star.addEventListener('click', () => {
+    score++;
+    scoreElement.textContent = score;
+    if (isSoundEnabled) {
+        playSound(1200, 'sine', 0.1);
+    }
+    repositionStar();
+});
+
+repositionStar(); // Initial star position
+
 // Share functionality
-document.getElementById('share-btn').addEventListener('click', function() {
-    const text = `I'm counting down to my midterm exam! Check it out!`;
-    if (navigator.share) {
-        navigator.share({
-            title: 'Midterm Countdown',
-            text: text,
-            url: window.location.href
-        }).catch(() => {
-            navigator.clipboard.writeText(text + ' ' + window.location.href)
-                .then(() => alert('Link copied to clipboard!'));
-        });
-    } else {
-        navigator.clipboard.writeText(text + ' ' + window.location.href)
-            .then(() => alert('Link copied to clipboard!'))
-            .catch(() => alert('Failed to copy link'));
+document.getElementById('share-btn').addEventListener('click', async () => {
+    const shareData = {
+        title: 'Midterm Countdown',
+        text: `Join me in preparing for the midterm! ${document.getElementById('days').textContent}d ${document.getElementById('hours').textContent}h ${document.getElementById('minutes').textContent}m remaining.`,
+        url: window.location.href
+    };
+    
+    try {
+        if (navigator.share) {
+            await navigator.share(shareData);
+        } else {
+            await navigator.clipboard.writeText(shareData.text);
+            alert('Countdown info copied to clipboard!');
+        }
+        if (isSoundEnabled) {
+            playSound(660, 'sine', 0.1);
+        }
+    } catch (err) {
+        console.error('Error sharing:', err);
     }
 });
 
 // Mini-game
-let score = 0;
 let gameActive = false;
 
 function startGame() {

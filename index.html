@@ -4,63 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Midterm Countdown</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <style>
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .font-space {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Time Until Midterm Examinations Conclude</h1>
-        <p class="arabic-text">هنتنفخ يا رجالة</p>
-        <div class="countdown">
-            <div class="time-block">
-                <span id="days">00</span>
-                <span class="label">Days</span>
+<body class="min-h-screen bg-[#0B1120] bg-[url('https://raw.githubusercontent.com/KarXB/thursday-countdown-for-mid/main/assets/grid.svg')] font-space text-white overflow-x-hidden">
+    <div class="absolute inset-0 bg-gradient-to-tr from-[#0B1120] via-[#0B1120]/90 to-indigo-500/20"></div>
+    
+    <div class="container relative max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-white/[0.02] backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/[0.05]">
+            <h1 class="text-4xl md:text-5xl font-orbitron font-bold text-center mb-2 bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 text-transparent bg-clip-text">Time Until Midterm</h1>
+            <p class="arabic-text text-2xl text-center mb-8 text-indigo-400 font-bold">هنتنفخ يا رجالة</p>
+            
+            <div class="countdown grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                <div class="time-block bg-white/[0.03] rounded-2xl p-4 backdrop-blur-sm border border-white/[0.05] hover:border-indigo-500/50 transition-all">
+                    <span id="days" class="text-4xl font-orbitron font-bold">00</span>
+                    <span class="label text-sm text-indigo-300">Days</span>
+                </div>
+                <div class="time-block bg-white/[0.03] rounded-2xl p-4 backdrop-blur-sm border border-white/[0.05] hover:border-indigo-500/50 transition-all">
+                    <span id="hours" class="text-4xl font-orbitron font-bold">00</span>
+                    <span class="label text-sm text-indigo-300">Hours</span>
+                </div>
+                <div class="time-block bg-white/[0.03] rounded-2xl p-4 backdrop-blur-sm border border-white/[0.05] hover:border-indigo-500/50 transition-all">
+                    <span id="minutes" class="text-4xl font-orbitron font-bold">00</span>
+                    <span class="label text-sm text-indigo-300">Minutes</span>
+                </div>
+                <div class="time-block bg-white/[0.03] rounded-2xl p-4 backdrop-blur-sm border border-white/[0.05] hover:border-indigo-500/50 transition-all">
+                    <span id="seconds" class="text-4xl font-orbitron font-bold">00</span>
+                    <span class="label text-sm text-indigo-300">Seconds</span>
+                </div>
+                <div class="time-block bg-white/[0.03] rounded-2xl p-4 backdrop-blur-sm border border-white/[0.05] hover:border-indigo-500/50 transition-all">
+                    <span id="milliseconds" class="text-4xl font-orbitron font-bold">000</span>
+                    <span class="label text-sm text-indigo-300">MS</span>
+                </div>
             </div>
-            <div class="time-block">
-                <span id="hours">00</span>
-                <span class="label">Hours</span>
+            
+            <div class="progress-container bg-white/[0.03] rounded-full h-3 mb-8 overflow-hidden border border-white/[0.05]">
+                <div id="progress-bar" class="h-full w-0 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 transition-all duration-500"></div>
             </div>
-            <div class="time-block">
-                <span id="minutes">00</span>
-                <span class="label">Minutes</span>
-            </div>
-            <div class="time-block">
-                <span id="seconds">00</span>
-                <span class="label">Seconds</span>
-            </div>
-            <div class="time-block">
-                <span id="milliseconds">000</span>
-                <span class="label">Moments</span>
-            </div>
-        </div>
-        
-        <div class="progress-container">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
 
-        <div class="controls">
-            <button id="sound-toggle" class="control-btn">
-                <i class="fas fa-volume-mute"></i>
-            </button>
-            <button id="share-btn" class="control-btn">
-                <i class="fas fa-share-alt"></i>
-            </button>
-        </div>
-
-        <div class="study-tips">
-            <h3>Study Tip of the Moment</h3>
-            <p id="study-tip"></p>
-            <button id="new-tip-btn">New Tip</button>
-        </div>
-
-        <div class="mini-game">
-            <h3>Quick Break: Catch the Star!</h3>
-            <div id="game-container">
-                <div id="player">😊</div>
-                <div id="star">⭐</div>
+            <div class="controls flex justify-center gap-4 mb-8">
+                <button id="sound-toggle" class="control-btn bg-white/[0.03] hover:bg-white/[0.08] p-3 rounded-full transition-all border border-white/[0.05] hover:border-indigo-500/50">
+                    <i class="fas fa-volume-mute text-xl"></i>
+                </button>
+                <button id="share-btn" class="control-btn bg-white/[0.03] hover:bg-white/[0.08] p-3 rounded-full transition-all border border-white/[0.05] hover:border-indigo-500/50">
+                    <i class="fas fa-share-alt text-xl"></i>
+                </button>
             </div>
-            <div id="game-score">Score: <span id="score">0</span></div>
-            <button id="start-game">Start Mini-Game</button>
+
+            <div class="study-tips bg-white/[0.03] rounded-2xl p-6 mb-8 backdrop-blur-sm border border-white/[0.05]">
+                <h3 class="mb-4">Study Tip of the Moment</h3>
+                <p id="study-tip" class="mb-4 text-lg text-center"></p>
+                <button id="new-tip-btn" class="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 px-4 py-2 rounded-lg transition-all font-semibold">
+                    <i class="fas fa-sync-alt"></i> New Tip
+                </button>
+            </div>
+
+            <div class="game-section">
+                <h3 class="mb-4">Quick Break: Catch the Star!</h3>
+                <div class="score-container bg-white/[0.03] rounded-2xl p-6 mb-8 backdrop-blur-sm border border-white/[0.05]">
+                    Score: <span id="score" class="font-bold">0</span>
+                </div>
+                <div id="game-container" class="bg-[#0B1120]/80 rounded-xl h-48 mb-4 relative overflow-hidden border border-white/[0.05]">
+                    <img id="star" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZDcwMCIgZD0iTTEyIDEuMjVsNC4xMiA4LjM0IDkuMjEgMS4zNC02LjY3IDYuNSAxLjU3IDkuMTlMMTIgMjEuOTFsLTguMjMgNC43MSAxLjU3LTkuMTktNi42Ny02LjUgOS4yMS0xLjM0TDEyIDEuMjV6Ii8+PC9zdmc+" alt="Star">
+                </div>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>
