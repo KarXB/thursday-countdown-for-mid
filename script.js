@@ -39,17 +39,40 @@ soundToggle.addEventListener('click', () => {
 
 // Countdown Timer
 const targetTime = new Date();
-targetTime.setHours(11, 0, 0, 0);
+targetTime.setHours(10, 30, 0, 0); // Set to 10:30 AM
 if (targetTime < new Date()) {
     targetTime.setDate(targetTime.getDate() + 1);
+}
+
+function showEndMessage() {
+    const countdownElement = document.querySelector('.countdown');
+    const progressContainer = document.querySelector('.progress-container');
+    const arabicTextElement = document.querySelector('.arabic-text');
+    
+    // Hide countdown and progress bar with fade out
+    countdownElement.style.opacity = '0';
+    progressContainer.style.opacity = '0';
+    
+    setTimeout(() => {
+        countdownElement.style.display = 'none';
+        progressContainer.style.display = 'none';
+        
+        // Update and show the end message
+        arabicTextElement.textContent = 'سقطنا؟';
+        arabicTextElement.classList.add('timer-end-text');
+        
+        if (isSoundEnabled) {
+            playSound(440, 'sine', 0.5); // Play a longer sound for the end state
+        }
+    }, 1000);
 }
 
 function updateCountdown() {
     const now = new Date();
     const difference = targetTime - now;
     
-    if (difference < 0) {
-        targetTime.setDate(targetTime.getDate() + 1);
+    if (difference <= 0) {
+        showEndMessage();
         return;
     }
     
@@ -72,7 +95,12 @@ function updateCountdown() {
     document.getElementById('progress-bar').style.width = `${progress}%`;
 }
 
-setInterval(updateCountdown, 50);
+// Check if we should show end message immediately
+if (new Date() >= targetTime) {
+    showEndMessage();
+} else {
+    setInterval(updateCountdown, 50);
+}
 
 // Study Tips
 const studyTips = [
