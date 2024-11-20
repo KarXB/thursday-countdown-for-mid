@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Midterm Countdown</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <h1>Time Until Midterm Examinations Conclude</h1>
+        <p class="arabic-text">هنتنفخ يا رجالة</p>
         <div class="countdown">
             <div class="time-block">
                 <span id="days">00</span>
@@ -30,6 +32,35 @@
                 <span id="milliseconds">000</span>
                 <span class="label">Moments</span>
             </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="controls">
+            <button id="sound-toggle" class="control-btn">
+                <i class="fas fa-volume-mute"></i>
+            </button>
+            <button id="share-btn" class="control-btn">
+                <i class="fas fa-share-alt"></i>
+            </button>
+        </div>
+
+        <div class="study-tips">
+            <h3>Study Tip of the Moment</h3>
+            <p id="study-tip"></p>
+            <button id="new-tip-btn">New Tip</button>
+        </div>
+
+        <div class="mini-game">
+            <h3>Quick Break: Catch the Star!</h3>
+            <div id="game-container">
+                <div id="player">😊</div>
+                <div id="star">⭐</div>
+            </div>
+            <div id="game-score">Score: <span id="score">0</span></div>
+            <button id="start-game">Start Mini-Game</button>
         </div>
     </div>
     <script src="script.js"></script>
