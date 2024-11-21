@@ -15,6 +15,81 @@
         .font-space {
             font-family: 'Space Grotesk', sans-serif;
         }
+        
+        #mobileControls {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: none;
+            justify-content: space-between;
+            padding: 0 20px;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .control-group {
+            display: flex;
+            gap: 10px;
+            pointer-events: all;
+        }
+        
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(79, 70, 229, 0.6);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
+        }
+        
+        .control-btn:active {
+            background: rgba(79, 70, 229, 0.8);
+        }
+
+        #startGame {
+            background: linear-gradient(to right, #3b82f6, #4f46e5);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #startGame:hover {
+            background: linear-gradient(to right, #2563eb, #4338ca);
+        }
+
+        #gameUI {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        #gameScore {
+            margin-top: 10px;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            #mobileControls {
+                display: flex;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen bg-[#0B1120] bg-[url('https://raw.githubusercontent.com/KarXB/thursday-countdown-for-mid/main/assets/grid.svg')] font-space text-white overflow-x-hidden">
@@ -69,13 +144,39 @@
                 </button>
             </div>
 
-            <div class="game-section">
-                <h3 class="mb-4">Quick Break: Catch the Star!</h3>
-                <div class="score-container bg-white/[0.03] rounded-2xl p-6 mb-8 backdrop-blur-sm border border-white/[0.05]">
-                    Score: <span id="score" class="font-bold">0</span>
-                </div>
-                <div id="game-container" class="bg-[#0B1120]/80 rounded-xl h-48 mb-4 relative overflow-hidden border border-white/[0.05]">
-                    <img id="star" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZDcwMCIgZD0iTTEyIDEuMjVsNC4xMiA4LjM0IDkuMjEgMS4zNC02LjY3IDYuNSAxLjU3IDkuMTlMMTIgMjEuOTFsLTguMjMgNC43MSAxLjU3LTkuMTktNi42Ny02LjUgOS4yMS0xLjM0TDEyIDEuMjV6Ii8+PC9zdmc+" alt="Star">
+            <div class="game-section bg-white/[0.03] rounded-2xl p-6 backdrop-blur-sm border border-white/[0.05]">
+                <h3 class="text-2xl font-bold mb-4">Platformer Game</h3>
+                <p class="text-gray-300 mb-4">Use WASD or Arrow keys to move, or use the on-screen controls</p>
+                <div class="game-container relative">
+                    <canvas id="gameCanvas" class="bg-gray-900/50 rounded-lg mx-auto"></canvas>
+                    <div id="gameUI">
+                        <button id="startGame">Start Game</button>
+                        <div id="gameScore">Score: 0</div>
+                    </div>
+                    <div id="mobileControls">
+                        <div class="control-group">
+                            <button class="control-btn" id="leftBtn" 
+                                ontouchstart="event.preventDefault(); handleMobileControl('left', true)" 
+                                ontouchend="event.preventDefault(); handleMobileControl('left', false)"
+                                onmousedown="event.preventDefault(); handleMobileControl('left', true)"
+                                onmouseup="event.preventDefault(); handleMobileControl('left', false)"
+                                onmouseleave="event.preventDefault(); handleMobileControl('left', false)">←</button>
+                            <button class="control-btn" id="rightBtn" 
+                                ontouchstart="event.preventDefault(); handleMobileControl('right', true)" 
+                                ontouchend="event.preventDefault(); handleMobileControl('right', false)"
+                                onmousedown="event.preventDefault(); handleMobileControl('right', true)"
+                                onmouseup="event.preventDefault(); handleMobileControl('right', false)"
+                                onmouseleave="event.preventDefault(); handleMobileControl('right', false)">→</button>
+                        </div>
+                        <div class="control-group">
+                            <button class="control-btn" id="jumpBtn" 
+                                ontouchstart="event.preventDefault(); handleMobileControl('jump', true)" 
+                                ontouchend="event.preventDefault(); handleMobileControl('jump', false)"
+                                onmousedown="event.preventDefault(); handleMobileControl('jump', true)"
+                                onmouseup="event.preventDefault(); handleMobileControl('jump', false)"
+                                onmouseleave="event.preventDefault(); handleMobileControl('jump', false)">↑</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
