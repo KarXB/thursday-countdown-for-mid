@@ -1,186 +1,241 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Midterm Countdown</title>
-    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <meta name="description" content="A modern modulo calculator with detailed explanations">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)">
+    <title>Modulo Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .font-orbitron {
-            font-family: 'Orbitron', sans-serif;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .font-space {
-            font-family: 'Space Grotesk', sans-serif;
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
         }
-        
-        #mobileControls {
-            position: fixed;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            display: none;
-            justify-content: space-between;
-            padding: 0 20px;
-            pointer-events: none;
-            z-index: 1000;
+        .hover-scale {
+            transition: transform 0.2s ease-out;
         }
-        
-        .control-group {
-            display: flex;
-            gap: 10px;
-            pointer-events: all;
+        .hover-scale:hover {
+            transform: scale(1.02);
         }
-        
-        .control-btn {
-            width: 60px;
-            height: 60px;
-            background: rgba(79, 70, 229, 0.6);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+        /* Cross-browser compatibility */
+        * {
             -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-            user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        
-        .control-btn:active {
-            background: rgba(79, 70, 229, 0.8);
+        /* For Firefox */
+        input[type=number] {
+            -moz-appearance: textfield;
         }
-
-        #startGame {
-            background: linear-gradient(to right, #3b82f6, #4f46e5);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        /* For Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
-
-        #startGame:hover {
-            background: linear-gradient(to right, #2563eb, #4338ca);
+        /* For IE */
+        input::-ms-clear,
+        input::-ms-reveal {
+            display: none;
         }
-
-        #gameUI {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            z-index: 1000;
-        }
-
-        #gameScore {
-            margin-top: 10px;
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-        
-        @media (max-width: 768px) {
-            #mobileControls {
-                display: flex;
+        @supports (-webkit-touch-callout: none) {
+            .min-h-screen {
+                min-height: -webkit-fill-available;
             }
         }
     </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        space: ['Space Grotesk', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
 </head>
-<body class="min-h-screen bg-[#0B1120] bg-[url('https://raw.githubusercontent.com/KarXB/thursday-countdown-for-mid/main/assets/grid.svg')] font-space text-white overflow-x-hidden">
-    <div class="absolute inset-0 bg-gradient-to-tr from-[#0B1120] via-[#0B1120]/90 to-indigo-500/20"></div>
-    
-    <div class="container relative max-w-4xl mx-auto px-4 py-8">
-        <div class="bg-white/[0.02] backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/[0.05]">
-            <h1 class="text-4xl md:text-5xl font-orbitron font-bold text-center mb-2 bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 text-transparent bg-clip-text">Time Until Midterm</h1>
-            <p class="arabic-text text-2xl text-center mb-8 text-indigo-400 font-bold">هنتنفخ يا رجالة</p>
-            
-            <div class="countdown grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-                <div class="time-block bg-white/[0.03] rounded-2xl p-4 backdrop-blur-sm border border-white/[0.05] hover:border-indigo-500/50 transition-all">
-                    <span id="days" class="text-4xl font-orbitron font-bold">00</span>
-                    <span class="label text-sm text-indigo-300">Days</span>
-                </div>
-                <div class="time-block bg-white/[0.03] rounded-2xl p-4 backdrop-blur-sm border border-white/[0.05] hover:border-indigo-500/50 transition-all">
-                    <span id="hours" class="text-4xl font-orbitron font-bold">00</span>
-                    <span class="label text-sm text-indigo-300">Hours</span>
-                </div>
-                <div class="time-block bg-white/[0.03] rounded-2xl p-4 backdrop-blur-sm border border-white/[0.05] hover:border-indigo-500/50 transition-all">
-                    <span id="minutes" class="text-4xl font-orbitron font-bold">00</span>
-                    <span class="label text-sm text-indigo-300">Minutes</span>
-                </div>
-                <div class="time-block bg-white/[0.03] rounded-2xl p-4 backdrop-blur-sm border border-white/[0.05] hover:border-indigo-500/50 transition-all">
-                    <span id="seconds" class="text-4xl font-orbitron font-bold">00</span>
-                    <span class="label text-sm text-indigo-300">Seconds</span>
-                </div>
-                <div class="time-block bg-white/[0.03] rounded-2xl p-4 backdrop-blur-sm border border-white/[0.05] hover:border-indigo-500/50 transition-all">
-                    <span id="milliseconds" class="text-4xl font-orbitron font-bold">000</span>
-                    <span class="label text-sm text-indigo-300">MS</span>
-                </div>
-            </div>
-            
-            <div class="progress-container bg-white/[0.03] rounded-full h-3 mb-8 overflow-hidden border border-white/[0.05]">
-                <div id="progress-bar" class="h-full w-0 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 transition-all duration-500"></div>
-            </div>
+<body class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 font-space p-4 md:p-6 flex items-center justify-center transition-colors duration-200">
+    <!-- Theme Toggle Button -->
+    <button id="themeToggle" class="fixed top-4 right-4 p-2 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-200 hover-scale z-40">
+        <svg class="w-6 h-6 text-gray-800 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+        <svg class="w-6 h-6 text-green-400 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+        </svg>
+    </button>
 
-            <div class="controls flex justify-center gap-4 mb-8">
-                <button id="sound-toggle" class="control-btn bg-white/[0.03] hover:bg-white/[0.08] p-3 rounded-full transition-all border border-white/[0.05] hover:border-indigo-500/50">
-                    <i class="fas fa-volume-mute text-xl"></i>
-                </button>
-                <button id="share-btn" class="control-btn bg-white/[0.03] hover:bg-white/[0.08] p-3 rounded-full transition-all border border-white/[0.05] hover:border-indigo-500/50">
-                    <i class="fas fa-share-alt text-xl"></i>
-                </button>
-            </div>
+    <!-- Credits Button -->
+    <button id="creditsBtn" class="fixed bottom-4 right-4 p-2 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-200 hover-scale z-40">
+        <svg class="w-6 h-6 text-gray-800 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+    </button>
 
-            <div class="study-tips bg-white/[0.03] rounded-2xl p-6 mb-8 backdrop-blur-sm border border-white/[0.05]">
-                <h3 class="mb-4">Study Tip of the Moment</h3>
-                <p id="study-tip" class="mb-4 text-lg text-center"></p>
-                <button id="new-tip-btn" class="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 px-4 py-2 rounded-lg transition-all font-semibold">
-                    <i class="fas fa-sync-alt"></i> New Tip
-                </button>
-            </div>
-
-            <div class="game-section bg-white/[0.03] rounded-2xl p-6 backdrop-blur-sm border border-white/[0.05]">
-                <h3 class="text-2xl font-bold mb-4">Platformer Game</h3>
-                <p class="text-gray-300 mb-4">Use WASD or Arrow keys to move, or use the on-screen controls</p>
-                <div class="game-container relative">
-                    <canvas id="gameCanvas" class="bg-gray-900/50 rounded-lg mx-auto"></canvas>
-                    <div id="gameUI">
-                        <button id="startGame">Start Game</button>
-                        <div id="gameScore">Score: 0</div>
-                    </div>
-                    <div id="mobileControls">
-                        <div class="control-group">
-                            <button class="control-btn" id="leftBtn" 
-                                ontouchstart="event.preventDefault(); handleMobileControl('left', true)" 
-                                ontouchend="event.preventDefault(); handleMobileControl('left', false)"
-                                onmousedown="event.preventDefault(); handleMobileControl('left', true)"
-                                onmouseup="event.preventDefault(); handleMobileControl('left', false)"
-                                onmouseleave="event.preventDefault(); handleMobileControl('left', false)">←</button>
-                            <button class="control-btn" id="rightBtn" 
-                                ontouchstart="event.preventDefault(); handleMobileControl('right', true)" 
-                                ontouchend="event.preventDefault(); handleMobileControl('right', false)"
-                                onmousedown="event.preventDefault(); handleMobileControl('right', true)"
-                                onmouseup="event.preventDefault(); handleMobileControl('right', false)"
-                                onmouseleave="event.preventDefault(); handleMobileControl('right', false)">→</button>
-                        </div>
-                        <div class="control-group">
-                            <button class="control-btn" id="jumpBtn" 
-                                ontouchstart="event.preventDefault(); handleMobileControl('jump', true)" 
-                                ontouchend="event.preventDefault(); handleMobileControl('jump', false)"
-                                onmousedown="event.preventDefault(); handleMobileControl('jump', true)"
-                                onmouseup="event.preventDefault(); handleMobileControl('jump', false)"
-                                onmouseleave="event.preventDefault(); handleMobileControl('jump', false)">↑</button>
-                        </div>
-                    </div>
-                </div>
+    <!-- Credits Modal -->
+    <div id="creditsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 animate-fade-in relative">
+            <button onclick="document.getElementById('creditsModal').classList.add('hidden')" 
+                    class="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
+                <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            <div class="text-center space-y-2">
+                <h3 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">Credits</h3>
+                <p class="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-green-400 dark:to-emerald-600 bg-clip-text text-transparent">Made by Kareem Ahmed Taha</p>
+                <p class="text-lg text-gray-600 dark:text-gray-300">MSA-CS</p>
+                <p class="text-md text-gray-500 dark:text-gray-400">ID: 254915</p>
             </div>
         </div>
     </div>
+
+    <main class="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 space-y-6 hover-scale transition-all duration-300">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-700 dark:to-gray-800 p-6 text-center border-b border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center mb-4">
+                <div class="w-6"></div> <!-- Spacer to balance the layout -->
+                <h1 class="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-green-400 dark:to-emerald-600 bg-clip-text text-transparent">Modulo Calculator</h1>
+                <button onclick="clearInputs()" class="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                </button>
+            </div>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">Find the remainder when dividing numbers</p>
+        </div>
+
+        <!-- Calculator Form -->
+        <div class="p-6 space-y-6">
+            <!-- Number Type Selection -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2">
+                        First Number Type
+                    </label>
+                    <select id="number1Type" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-gray-400 dark:focus:border-green-500 focus:ring-2 focus:ring-gray-200 dark:focus:ring-green-800 outline-none transition-all">
+                        <option value="int">Integer</option>
+                        <option value="float">Float</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2">
+                        Second Number Type
+                    </label>
+                    <select id="number2Type" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-gray-400 dark:focus:border-green-500 focus:ring-2 focus:ring-gray-200 dark:focus:ring-green-800 outline-none transition-all">
+                        <option value="int">Integer</option>
+                        <option value="float">Float</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Number Inputs -->
+            <div class="space-y-4">
+                <div class="transform transition-all duration-200 hover:translate-y-[-2px]">
+                    <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2" for="number1">
+                        First Number (Dividend)
+                    </label>
+                    <input type="number" 
+                        id="number1" 
+                        class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-gray-400 dark:focus:border-green-500 focus:ring-2 focus:ring-gray-200 dark:focus:ring-green-800 outline-none transition-all"
+                        placeholder="Enter the number to be divided"
+                        inputmode="numeric">
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">This is the number you want to divide</p>
+                </div>
+
+                <div class="transform transition-all duration-200 hover:translate-y-[-2px]">
+                    <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2" for="number2">
+                        Second Number (Divisor)
+                    </label>
+                    <input type="number" 
+                        id="number2" 
+                        class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:border-gray-400 dark:focus:border-green-500 focus:ring-2 focus:ring-gray-200 dark:focus:ring-green-800 outline-none transition-all"
+                        placeholder="Enter the number to divide by"
+                        inputmode="numeric">
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">This is the number you're dividing by</p>
+                </div>
+            </div>
+
+            <!-- Explanation Type Toggle -->
+            <div class="flex gap-4">
+                <button id="detailedBtn" 
+                    class="flex-1 py-2 px-4 rounded-xl font-medium transition-all duration-200 bg-gradient-to-r from-gray-800 to-gray-700 dark:from-green-600 dark:to-emerald-600 text-white hover:opacity-90 active"
+                    role="button"
+                    aria-pressed="true">
+                    Detailed
+                </button>
+                <button id="simpleBtn" 
+                    class="flex-1 py-2 px-4 rounded-xl font-medium transition-all duration-200 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+                    role="button"
+                    aria-pressed="false">
+                    Simple
+                </button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-4">
+                <button onclick="calculateModulo()" 
+                    class="flex-1 bg-gradient-to-r from-gray-800 to-gray-700 dark:from-green-600 dark:to-emerald-600 text-white font-semibold py-3 px-6 rounded-xl hover:opacity-90 transform hover:-translate-y-0.5 transition-all duration-200">
+                    Calculate Remainder
+                </button>
+            </div>
+
+            <!-- Results Section -->
+            <div class="result-section hidden space-y-6">
+                <!-- Result Display -->
+                <div class="bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-800 p-6 rounded-xl border-2 border-gray-200 dark:border-gray-600">
+                    <div id="result" class="flex items-center justify-center gap-3">
+                        <!-- Result will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Explanation -->
+                <div id="explanation" class="space-y-4">
+                    <!-- Explanation will be inserted here -->
+                </div>
+            </div>
+
+            <!-- History Panel -->
+            <div class="mt-8 border-t-2 border-gray-100 dark:border-gray-700 pt-6">
+                <div class="flex items-center mb-4">
+                    <h3 class="text-xl font-semibold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-green-400 dark:to-emerald-600 bg-clip-text text-transparent">History</h3>
+                </div>
+                <div id="historyList" class="space-y-3 max-h-60 overflow-y-auto">
+                    <!-- History items will be added here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- History Modal -->
+    <div id="historyModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 animate-fade-in relative">
+            <button onclick="document.getElementById('historyModal').classList.add('hidden')" 
+                    class="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
+                <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            <div class="text-center space-y-4">
+                <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Calculation History</h3>
+                <div id="historyList" class="space-y-3 max-h-96 overflow-y-auto"></div>
+                <button onclick="clearHistory()" 
+                        class="mt-4 w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-xl transition-colors duration-200">
+                    Clear History
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
